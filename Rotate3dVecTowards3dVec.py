@@ -1,6 +1,7 @@
-#rotate vector to another
-#
-#
+#rotate vector cube face1 to sphere position as sphere moves 
+#by calculating the cube's face 1 center and axis&angle between the 2 vectors (face1 - spherepos)
+#then derive euler angles by forming a quaternion from rotAxis and Angle and rotate accordingly (using RELATIVE rotation)
+#NOTE: LINE 187: GRAB the new final rotation after Relatively rotated/concatenated with the previous command (line 184), and set the keyframes based on the absolute rotation further down
 
 import maya.cmds as cmds
 import math
@@ -183,8 +184,8 @@ for i in range(1,121,1):
 	cmds.xform(mycube, rotation=[bank, heading, attitude], r=True)
 	
 	#new world space rotations after relative rotation concatenation
-	newWorldrot=cmds.xform(mycube, rotation=True, query=True, os=True)
-	
+	#GRAB the new final rotation after Relatively rotated/concatenated with the previous command (line 184), and set the keyframes based on the absolute rotation further down
+	newWorldrot=cmds.xform(mycube, rotation=True, query=True, os=True)	
 	
 	cmds.select(mycube)	
 	cmds.setKeyframe( v=newWorldrot[0], at='rotateX', t = i)
