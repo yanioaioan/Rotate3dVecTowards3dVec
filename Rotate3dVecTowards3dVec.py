@@ -127,7 +127,7 @@ print spherePos
 #find center of face 1
 cubefaceCenter=findCenterOfFace(1)
 
-
+'''ALTERNATIVE WAY OF CALCULATING EULER-ANGLES using SPHERICAL COORDINATES'''
 #source: http://stackoverflow.com/questions/15101103/euler-angles-between-two-3d-vectors
 #Alernative way using Spherical coordinates
 #subtract v1 from v2 as in v2-v1
@@ -139,8 +139,11 @@ yaw = math.atan2(float(x), float(z)) *180.0/math.pi;
 padj = math.sqrt( math.pow(float(x), 2) + math.pow(float(z), 2)); 
 pitch = math.atan2( float(padj), float(y)) *180.0/math.pi;
 cmds.xform(mycube, rotation=[pitch, yaw, 0])
+'''ALTERNATIVE WAY OF CALCULATING EULER-ANGLES using SPHERICAL COORDINATES'''
 
 
+
+'''The following axis/angle way works currently only when cube's at origin'''
 '''
 #find rot axis
 rotAxis=cross(cubefaceCenter,spherePos)
@@ -190,8 +193,9 @@ for i in range(1,121,1):
 	#find center of face 1 of cube
 	cubefaceCenter=findCenterOfFace(1)
 	print cubefaceCenter
+
 	
-	
+	'''ALTERNATIVE WAY OF CALCULATING EULER-ANGLES using SPHERICAL COORDINATES'''	
 	v2_v1=subtract(spherePos, cubefaceCenter)
 	x=v2_v1[0]
 	y=v2_v1[1]
@@ -200,8 +204,12 @@ for i in range(1,121,1):
 	padj = math.sqrt( math.pow(float(x), 2) + math.pow(float(z), 2)); 
 	pitch = math.atan2( float(padj), float(y)) *180.0/math.pi;
 	cmds.xform(mycube, rotation=[pitch, yaw, 0])
+	'''ALTERNATIVE WAY OF CALCULATING EULER-ANGLES using SPHERICAL COORDINATES'''
 
-	
+
+
+
+	'''The following axis/angle way works currently only when cube's at origin'''
 	'''
 	#find rot axis
 	rotAxis=cross(cubefaceCenter,spherePos)
@@ -227,6 +235,8 @@ for i in range(1,121,1):
 	#now rotate cube on rotaxis by angle
 	cmds.xform(mycube, rotation=[bank, heading, attitude], r=True)
 	'''
+	
+	
 	#new world space rotations after relative rotation concatenation
 	#GRAB the new final rotation after Relatively rotated/concatenated with the previous command (line 184), and set the keyframes based on the absolute rotation further down
 	newWorldrot=cmds.xform(mycube, rotation=True, query=True)	
