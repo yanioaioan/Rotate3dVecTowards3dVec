@@ -1,7 +1,15 @@
-#rotate vector cube face1 to sphere position as sphere moves 
-#by calculating the cube's face 1 center and axis&angle between the 2 vectors (face1 - spherepos)
+'''ALTERNATIVE WAY OF CALCULATING EULER-ANGLES using SPHERICAL COORDINATES'''
+
+'''rotate vector cube face1 to sphere position as sphere moves 
+BY..
+calculating the vector from cube's face 1 center 2 sphere position vecotr (spherepos - face1 )
+then derive euler angles by calculating spherical coordinates (in WORLD SPACE)'''
+
+#NOT BY..
+#calculating the cube's face 1 center and axis&angle between the 2 vectors (face1 - spherepos)
 #then derive euler angles by forming a quaternion from rotAxis and Angle and rotate accordingly (using RELATIVE rotation)
 #NOTE: LINE 187: GRAB the new final rotation after Relatively rotated/concatenated with the previous command (line 184), and set the keyframes based on the absolute rotation further down
+
 
 import maya.cmds as cmds
 import math
@@ -91,6 +99,14 @@ def findCenterOfFace(facenum):
 	cubefaceCenter = [sumX/faceVertices, sumY/faceVertices, sumZ/faceVertices]
 	return cubefaceCenter
 
+def subtract(spherePos, cubefaceCenter):
+	retVec=[]
+	retVec.append(spherePos[0]-cubefaceCenter[0])
+	retVec.append(spherePos[1]-cubefaceCenter[1])
+	retVec.append(spherePos[2]-cubefaceCenter[2])
+	
+	return retVec
+	
 
 
 #sphere
@@ -101,17 +117,31 @@ spherePos=cmds.xform(mysphere, translation=True, query=True)
 
 #cube
 mycube=cmds.polyCube()
-cmds.xform(mycube, translation=[0.001,0,0])
+cmds.xform(mycube, translation=[3.0001,0,0])
 cubePos=cmds.xform(mycube, translation=True, query=True)
 
 
 spherePos=cmds.xform(mysphere, translation=True, query=True)
 print spherePos
 
-
 #find center of face 1
 cubefaceCenter=findCenterOfFace(1)
 
+
+#source: http://stackoverflow.com/questions/15101103/euler-angles-between-two-3d-vectors
+#Alernative way using Spherical coordinates
+#subtract v1 from v2 as in v2-v1
+v2_v1=subtract(spherePos, cubefaceCenter)
+x=v2_v1[0]
+y=v2_v1[1]
+z=v2_v1[2]
+yaw = math.atan2(float(x), float(z)) *180.0/math.pi;
+padj = math.sqrt( math.pow(float(x), 2) + math.pow(float(z), 2)); 
+pitch = math.atan2( float(padj), float(y)) *180.0/math.pi;
+cmds.xform(mycube, rotation=[pitch, yaw, 0])
+
+
+'''
 #find rot axis
 rotAxis=cross(cubefaceCenter,spherePos)
 #normalize rot axis
@@ -136,10 +166,12 @@ attitude=euAngles[2]*(180/math.pi)
 
 #now rotate cube on rotaxis by angle
 cmds.xform(mycube, rotation=[bank, heading, attitude], r=True)
+'''
+
 
 
 for i in range(1,121,1):
-		
+	
 	#move the sphere
 	spherePos[0]=spherePos[0]-math.sin( i/10.0 ) / 2.0
 	spherePos[2]=spherePos[2]+math.cos( i/10.0 ) / 2.0
@@ -159,6 +191,18 @@ for i in range(1,121,1):
 	cubefaceCenter=findCenterOfFace(1)
 	print cubefaceCenter
 	
+	
+	v2_v1=subtract(spherePos, cubefaceCenter)
+	x=v2_v1[0]
+	y=v2_v1[1]
+	z=v2_v1[2]
+	yaw = math.atan2(float(x), float(z)) *180.0/math.pi;
+	padj = math.sqrt( math.pow(float(x), 2) + math.pow(float(z), 2)); 
+	pitch = math.atan2( float(padj), float(y)) *180.0/math.pi;
+	cmds.xform(mycube, rotation=[pitch, yaw, 0])
+
+	
+	'''
 	#find rot axis
 	rotAxis=cross(cubefaceCenter,spherePos)
 	#normalize rot axis
@@ -182,12 +226,14 @@ for i in range(1,121,1):
 	
 	#now rotate cube on rotaxis by angle
 	cmds.xform(mycube, rotation=[bank, heading, attitude], r=True)
-	
+	'''
 	#new world space rotations after relative rotation concatenation
 	#GRAB the new final rotation after Relatively rotated/concatenated with the previous command (line 184), and set the keyframes based on the absolute rotation further down
-	newWorldrot=cmds.xform(mycube, rotation=True, query=True, os=True)	
+	newWorldrot=cmds.xform(mycube, rotation=True, query=True)	
 	
 	cmds.select(mycube)	
 	cmds.setKeyframe( v=newWorldrot[0], at='rotateX', t = i)
 	cmds.setKeyframe( v=newWorldrot[1], at='rotateY', t = i)
 	cmds.setKeyframe( v=newWorldrot[2], at='rotateZ', t = i)
+	
+	
