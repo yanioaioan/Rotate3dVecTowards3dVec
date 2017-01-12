@@ -2,7 +2,7 @@
 
 '''rotate vector cube face1 to sphere position as sphere moves 
 BY..
-calculating the vector from cube's face 1 center 2 sphere position vecotr (spherepos - face1 )
+calculating the vector from cube's face 1 center 2 sphere position vector (spherepos - face1 )
 then derive euler angles by calculating spherical coordinates (in WORLD SPACE)'''
 
 #NOT BY..
